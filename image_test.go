@@ -1,5 +1,4 @@
 // Copyright 2013 Beego Authors
-// Copyright 2014 The Macaron Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License"): you may
 // not use this file except in compliance with the License. You may obtain
@@ -19,20 +18,46 @@ import (
 	"testing"
 )
 
-func TestSiphash(t *testing.T) {
-	// good := uint64(0xe849e8bb6ffe2567)
-	// cur := siphash(0, 0, 0)
-
-	// t.Helper()
-	// if cur != good {
-	// 	t.Errorf("unexpected string:\n--- got ---\n%d\n--- want ---\n%d", cur, good)
-	// }
+type byteCounter struct {
+	n int64
 }
 
-func BenchmarkSiprng(b *testing.B) {
-	b.SetBytes(8)
-	p := &siprng{}
+func (bc *byteCounter) Write(b []byte) (int, error) {
+	bc.n += int64(len(b))
+	return len(b), nil
+}
+
+func BenchmarkNewImage(b *testing.B) {
+	b.StopTimer()
+	d := RandomStr(6)
+	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		p.Uint64()
+		img := Image{
+			Chars:   d,
+			Width:   240,
+			Height:  80,
+			Noises:  10,
+			MaxSkew: 0.2,
+		}
+		img.Base64()
+	}
+}
+
+func BenchmarkImageWriteTo(b *testing.B) {
+	b.StopTimer()
+	d := RandomStr(6)
+	b.StartTimer()
+	counter := &byteCounter{}
+	for i := 0; i < b.N; i++ {
+		img := Image{
+			Chars:   d,
+			Width:   240,
+			Height:  80,
+			Noises:  10,
+			MaxSkew: 0.2,
+		}
+		_, _ = img.WriteTo(counter)
+		b.SetBytes(counter.n)
+		counter.n = 0
 	}
 }

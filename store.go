@@ -79,10 +79,10 @@ func (m *MapStore) stopCleanup() {
 /*GetD get interface with default */
 func (m *MapStore) Get(key string) any {
 	if v, b := m.store.Load(key); b {
+		m.store.Delete(key) // 用过即弃
 		switch vv := v.(type) {
 		case *stored:
 			if !vv.ttl.IsZero() && vv.ttl.Before(time.Now()) {
-				m.store.Delete(key)
 				return nil
 			}
 			return vv.val
