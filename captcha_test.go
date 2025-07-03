@@ -44,7 +44,7 @@ func TestGenerateCaptcha(t *testing.T) {
 
 	for idx, vv := range []any{configA, configD} {
 
-		idkey, cap := Generate("", vv)
+		idkey, cap := Generate(vv)
 		ext := "png"
 		if idx == 0 {
 			ext = "wav"
@@ -62,7 +62,7 @@ func TestGenerateCaptcha(t *testing.T) {
 	defer os.RemoveAll(testDirAll)
 	for i := range 16 {
 		configC.Mode = i % 4
-		idkey, cap := Generate("", configC)
+		idkey, cap := Generate(configC)
 		ext := "png"
 		err := WriteToFile(cap, testDirAll, "char_"+idkey, ext)
 		if err != nil {
@@ -72,13 +72,13 @@ func TestGenerateCaptcha(t *testing.T) {
 }
 
 func TestCaptchaWriteToBase64Encoding(t *testing.T) {
-	_, cap := Generate("", configD)
+	_, cap := Generate(configD)
 	base64string := WriteToBase64Encoding(cap)
 	if !strings.Contains(base64string, MimeTypeCaptchaImage) {
 
 		t.Error("encodeing base64 string failed.")
 	}
-	_, capA := Generate("", configA)
+	_, capA := Generate(configA)
 	base64stringA := WriteToBase64Encoding(capA)
 	if !strings.Contains(base64stringA, MimeTypeCaptchaAudio) {
 
@@ -87,7 +87,7 @@ func TestCaptchaWriteToBase64Encoding(t *testing.T) {
 }
 
 func TestVerifyCaptcha(t *testing.T) {
-	idkey, _ := Generate("", configD)
+	idkey, _ := Generate(configD)
 	verifyValue := globalStore.Get(idkey)
 	if Verify(idkey, verifyValue.(string)) {
 		t.Log(idkey, verifyValue)
@@ -110,7 +110,7 @@ func TestPathExists(t *testing.T) {
 
 func TestCaptchaWriteToFileCreateDirectory(t *testing.T) {
 
-	idKey, captcha := Generate("", configD)
+	idKey, captcha := Generate(configD)
 	testDir, _ := os.MkdirTemp("", "")
 	defer os.Remove(testDir)
 	assert.Nil(t, WriteToFile(captcha, testDir+"/NotExistFolder", idKey, "png"))
@@ -119,7 +119,7 @@ func TestCaptchaWriteToFileCreateDirectory(t *testing.T) {
 func TestCaptchaWriteToFileCreateFileFailed(t *testing.T) {
 
 	var err error
-	idKey, captcha := Generate("", configD)
+	idKey, captcha := Generate(configD)
 	testDir, _ := os.MkdirTemp("", "")
 	defer os.Remove(testDir)
 	noPermissionDirPath := testDir + "/NoPermission"

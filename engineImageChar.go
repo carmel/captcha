@@ -51,7 +51,6 @@ type ConfigCharacter struct {
 	IsShowSlimeLine bool `yaml:"isShowSlimeLine"`
 	//IsShowSineLine is show sine line.
 	IsShowSineLine bool `yaml:"isShowSineLine"`
-
 	// CaptchaLen Default number of digits in captcha solution.
 	// 默认数字验证长度6.
 	CaptchaLen int `yaml:"captchaLen"`

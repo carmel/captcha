@@ -21,13 +21,6 @@ import (
 	"io"
 )
 
-// idLen is a length of captcha id string.
-// (20 bytes of 62-letter alphabet give ~119 bits.)
-const idLen = 20
-
-// idChars are characters allowed in captcha id.
-var idChars = []byte(TxtNumbers + TxtAlphabet)
-
 // rngKey is a secret key used to deterministically derive seeds for
 // PRNGs used in image and audio. Generated once during initialization.
 var rngKey [32]byte
@@ -104,16 +97,6 @@ func randomBytesMod(length int, mod byte) (b []byte) {
 			}
 		}
 	}
-}
-
-// randomId returns a new random id key string.
-// golang服务器端产生随机的idKey
-func randomId() string {
-	b := randomBytesMod(idLen, byte(len(idChars)))
-	for i, c := range b {
-		b[i] = idChars[c]
-	}
-	return string(b)
 }
 
 // parseDigitsToString parse randomDigits to normal string
