@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/carmel/captcha/store"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,7 +42,7 @@ func TestGenerateCaptcha(t *testing.T) {
 	testDir, _ := os.MkdirTemp("", "")
 	defer os.Remove(testDir)
 
-	for idx, vv := range []interface{}{configA, configD} {
+	for idx, vv := range []any{configA, configD} {
 
 		idkey, cap := Generate("", vv)
 		ext := "png"
@@ -51,21 +50,21 @@ func TestGenerateCaptcha(t *testing.T) {
 			ext = "wav"
 		}
 
-		CaptchaWriteToFile(cap, testDir, idkey, ext)
-		CaptchaWriteToFile(cap, testDir, idkey, ext)
+		WriteToFile(cap, testDir, idkey, ext)
+		WriteToFile(cap, testDir, idkey, ext)
 
-		CaptchaWriteToFile(cap, testDir, idkey, ext)
+		WriteToFile(cap, testDir, idkey, ext)
 
 		// t.Log(idkey, globalStore.Get(idkey, false))
 
 	}
 	testDirAll, _ := os.MkdirTemp("", "all")
 	defer os.RemoveAll(testDirAll)
-	for i := 0; i < 16; i++ {
+	for i := range 16 {
 		configC.Mode = i % 4
 		idkey, cap := Generate("", configC)
 		ext := "png"
-		err := CaptchaWriteToFile(cap, testDirAll, "char_"+idkey, ext)
+		err := WriteToFile(cap, testDirAll, "char_"+idkey, ext)
 		if err != nil {
 			t.Error(err)
 		}
@@ -74,24 +73,23 @@ func TestGenerateCaptcha(t *testing.T) {
 
 func TestCaptchaWriteToBase64Encoding(t *testing.T) {
 	_, cap := Generate("", configD)
-	base64string := CaptchaWriteToBase64Encoding(cap)
+	base64string := WriteToBase64Encoding(cap)
 	if !strings.Contains(base64string, MimeTypeCaptchaImage) {
 
 		t.Error("encodeing base64 string failed.")
 	}
 	_, capA := Generate("", configA)
-	base64stringA := CaptchaWriteToBase64Encoding(capA)
+	base64stringA := WriteToBase64Encoding(capA)
 	if !strings.Contains(base64stringA, MimeTypeCaptchaAudio) {
 
 		t.Error("encodeing base64 string failed.")
 	}
-
 }
 
 func TestVerifyCaptcha(t *testing.T) {
 	idkey, _ := Generate("", configD)
-	verifyValue := globalStore.Get(idkey, false)
-	if Verify(idkey, verifyValue) {
+	verifyValue := globalStore.Get(idkey)
+	if Verify(idkey, verifyValue.(string)) {
 		t.Log(idkey, verifyValue)
 	} else {
 		t.Error("verify captcha content is failed.")
@@ -115,7 +113,7 @@ func TestCaptchaWriteToFileCreateDirectory(t *testing.T) {
 	idKey, captcha := Generate("", configD)
 	testDir, _ := os.MkdirTemp("", "")
 	defer os.Remove(testDir)
-	assert.Nil(t, CaptchaWriteToFile(captcha, testDir+"/NotExistFolder", idKey, "png"))
+	assert.Nil(t, WriteToFile(captcha, testDir+"/NotExistFolder", idKey, "png"))
 }
 
 func TestCaptchaWriteToFileCreateFileFailed(t *testing.T) {
@@ -129,7 +127,7 @@ func TestCaptchaWriteToFileCreateFileFailed(t *testing.T) {
 	err = os.Mkdir(noPermissionDirPath, os.ModeDir)
 	assert.Nil(t, err)
 
-	err = CaptchaWriteToFile(captcha, noPermissionDirPath, idKey, "png")
+	err = WriteToFile(captcha, noPermissionDirPath, idKey, "png")
 	//has no permission must failed
 	if runtime.GOOS == "windows" {
 		assert.Nil(t, err)
@@ -139,7 +137,9 @@ func TestCaptchaWriteToFileCreateFileFailed(t *testing.T) {
 }
 
 func TestSetCustomStore(t *testing.T) {
-	s := store.NewMemoryStore(1000, 10*time.Minute)
-	SetCustomStore(s)
-	assert.Equal(t, globalStore, s)
+	globalStore = NewMapStore(1*time.Second, 5*time.Second)
+	verifyCode := "sddsffds"
+	globalStore.Set("1", verifyCode)
+
+	assert.Equal(t, globalStore.Get("1"), verifyCode)
 }

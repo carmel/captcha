@@ -33,7 +33,7 @@ type ConfigCharacter struct {
 	// Width Captcha png width in pixel.
 	// 图像验证码的宽度像素
 	Width int `yaml:"width"`
-	//Mode : base64captcha.CaptchaModeNumber=0, base64captcha.CaptchaModeAlphabet=1, base64captcha.CaptchaModeArithmetic=2, base64captcha.CaptchaModeNumberAlphabet=3.
+	//Mode : captcha.ModeNumber=0, captcha.ModeAlphabet=1, captcha.ModeArithmetic=2, captcha.ModeNumberAlphabet=3.
 	Mode int `yaml:"mode"`
 	//IsUseSimpleFont is use simply font(...captcha/fonts/RitaSmith.ttf).
 	IsUseSimpleFont bool `yaml:"isUseSimpleFont"`
@@ -223,7 +223,7 @@ func (captcha *ImageChar) drawBeeline(point1 point, point2 point, lineColor colo
 func (captcha *ImageChar) drawNoise(complex int) *ImageChar {
 	density := 18
 	switch complex {
-	case CaptchaComplexLower:
+	case ComplexLower:
 		density = 28
 	case CaptchaComplexMedium:
 		density = 18
@@ -251,7 +251,7 @@ func (captcha *ImageChar) drawNoise(complex int) *ImageChar {
 func (captcha *ImageChar) drawTextNoise(complex int, isSimpleFont bool) error {
 	density := 1500
 	switch complex {
-	case CaptchaComplexLower:
+	case ComplexLower:
 		density = 2000
 	case CaptchaComplexMedium:
 		density = 1500
@@ -370,13 +370,13 @@ func EngineCharCreate(config ConfigCharacter) *ImageChar {
 	var captchaContent string
 
 	switch config.Mode {
-	case CaptchaModeAlphabet:
+	case ModeAlphabet:
 		captchaContent = randText(config.CaptchaLen, TxtAlphabet)
 		captchaImage.VerifyValue = captchaContent
-	case CaptchaModeArithmetic:
+	case ModeArithmetic:
 		captchaContent, captchaImage.VerifyValue = randArithmetic()
 
-	case CaptchaModeNumber:
+	case ModeNumber:
 		captchaContent = randText(config.CaptchaLen, TxtNumbers)
 		captchaImage.VerifyValue = captchaContent
 	default:

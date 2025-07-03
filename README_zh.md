@@ -56,10 +56,10 @@ func demoCodeCaptchaCreate() {
 	var configC = captcha.ConfigCharacter{
 		Height:             60,
 		Width:              240,
-		//const CaptchaModeNumber:数字,CaptchaModeAlphabet:字母,CaptchaModeArithmetic:算术,CaptchaModeNumberAlphabet:数字字母混合.
-		Mode:               captcha.CaptchaModeNumber,
-		ComplexOfNoiseText: captcha.CaptchaComplexLower,
-		ComplexOfNoiseDot:  captcha.CaptchaComplexLower,
+		//const ModeNumber:数字,ModeAlphabet:字母,ModeArithmetic:算术,ModeNumberAlphabet:数字字母混合.
+		Mode:               captcha.ModeNumber,
+		ComplexOfNoiseText: captcha.ComplexLower,
+		ComplexOfNoiseDot:  captcha.ComplexLower,
 		IsShowHollowLine:   false,
 		IsShowNoiseDot:     false,
 		IsShowNoiseText:    false,
@@ -71,17 +71,17 @@ func demoCodeCaptchaCreate() {
 	//Generate 第一个参数为空字符串,包会自动在服务器一个随机种子给你产生随机uiid.
 	idKeyA, capA := captcha.Generate("", configA)
 	//以base64编码
-	base64stringA := captcha.CaptchaWriteToBase64Encoding(capA)
+	base64stringA := captcha.WriteToBase64Encoding(capA)
 	//创建字符公式验证码.
 	//Generate 第一个参数为空字符串,包会自动在服务器一个随机种子给你产生随机uiid.
 	idKeyC, capC := captcha.Generate("", configC)
 	//以base64编码
-	base64stringC := captcha.CaptchaWriteToBase64Encoding(capC)
+	base64stringC := captcha.WriteToBase64Encoding(capC)
 	//创建数字验证码.
 	//Generate 第一个参数为空字符串,包会自动在服务器一个随机种子给你产生随机uiid.
 	idKeyD, capD := captcha.Generate("", configD)
 	//以base64编码
-	base64stringD := captcha.CaptchaWriteToBase64Encoding(capD)
+	base64stringD := captcha.WriteToBase64Encoding(capD)
 
 	fmt.Println(idKeyA, base64stringA, "\n")
 	fmt.Println(idKeyC, base64stringC, "\n")
@@ -143,7 +143,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 	//create base64 encoding captcha
 	//创建base64图像验证码
 
-	var config interface{}
+	var config any
 	switch postParameters.CaptchaType {
 	case "audio":
 		config = postParameters.ConfigAudio
@@ -154,7 +154,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Generate 第一个参数为空字符串,包会自动在服务器一个随机种子给你产生随机uiid.
 	captchaId, digitCap := captcha.Generate(postParameters.Id, config)
-	base64Png := captcha.CaptchaWriteToBase64Encoding(digitCap)
+	base64Png := captcha.WriteToBase64Encoding(digitCap)
 
 	//or you can do this
 	//你也可以是用默认参数 生成图像验证码
@@ -164,7 +164,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 	//设置json响应
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	body := map[string]interface{}{"code": 1, "data": base64Png, "captchaId": captchaId, "msg": "success"}
+	body := map[string]any{"code": 1, "data": base64Png, "captchaId": captchaId, "msg": "success"}
 	json.NewEncoder(w).Encode(body)
 }
 // captcha verify http handler
@@ -186,9 +186,9 @@ func captchaVerifyHandle(w http.ResponseWriter, r *http.Request) {
 	//set json response
 	//设置json响应
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	body := map[string]interface{}{"code": "error", "data": "验证失败", "msg": "captcha failed"}
+	body := map[string]any{"code": "error", "data": "验证失败", "msg": "captcha failed"}
 	if verifyResult {
-		body = map[string]interface{}{"code": "success", "data": "验证通过", "msg": "captcha verified"}
+		body = map[string]any{"code": "success", "data": "验证通过", "msg": "captcha verified"}
 	}
 	json.NewEncoder(w).Encode(body)
 }

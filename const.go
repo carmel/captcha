@@ -20,22 +20,22 @@ const (
 	FileExtCaptchaImage = "png"
 )
 const (
-	//CaptchaComplexLower complex level lower.
-	CaptchaComplexLower = iota
+	//ComplexLower complex level lower.
+	ComplexLower = iota
 	//CaptchaComplexMedium complex level medium.
 	CaptchaComplexMedium
 	//CaptchaComplexHigh complex level high.
 	CaptchaComplexHigh
 )
 const (
-	//CaptchaModeNumber mode number.
-	CaptchaModeNumber = iota
-	//CaptchaModeAlphabet mode alphabet.
-	CaptchaModeAlphabet
-	//CaptchaModeArithmetic mode arithmetic.
-	CaptchaModeArithmetic
-	//CaptchaModeNumberAlphabet mode mix number and alphabet,this is also default mode.
-	CaptchaModeNumberAlphabet
+	//ModeNumber mode number.
+	ModeNumber = iota
+	//ModeAlphabet mode alphabet.
+	ModeAlphabet
+	//ModeArithmetic mode arithmetic.
+	ModeArithmetic
+	//ModeNumberAlphabet mode mix number and alphabet,this is also default mode.
+	ModeNumberAlphabet
 )
 
 //GoTestOutputDir run go test command where the png and wav file output

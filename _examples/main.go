@@ -35,7 +35,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 	//create base64 encoding captcha
 	//创建base64图像验证码
 
-	var config interface{}
+	var config any
 	switch postParameters.CaptchaType {
 	case "audio":
 		config = postParameters.ConfigAudio
@@ -45,7 +45,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 		config = postParameters.ConfigDigit
 	}
 	captchaId, captcaInterfaceInstance := captcha.Generate(postParameters.Id, config)
-	base64blob := captcha.CaptchaWriteToBase64Encoding(captcaInterfaceInstance)
+	base64blob := captcha.WriteToBase64Encoding(captcaInterfaceInstance)
 
 	//or you can just write the captcha content to the httpResponseWriter.
 	//before you put the captchaId into the response COOKIE.
@@ -54,7 +54,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 	//set json response
 	//设置json响应
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	body := map[string]interface{}{"code": 1, "data": base64blob, "captchaId": captchaId, "msg": "success"}
+	body := map[string]any{"code": 1, "data": base64blob, "captchaId": captchaId, "msg": "success"}
 	json.NewEncoder(w).Encode(body)
 }
 
@@ -77,9 +77,9 @@ func captchaVerifyHandle(w http.ResponseWriter, r *http.Request) {
 	//set json response
 	//设置json响应
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	body := map[string]interface{}{"code": "error", "data": "验证失败", "msg": "captcha failed"}
+	body := map[string]any{"code": "error", "data": "验证失败", "msg": "captcha failed"}
 	if verifyResult {
-		body = map[string]interface{}{"code": "success", "data": "验证通过", "msg": "captcha verified"}
+		body = map[string]any{"code": "success", "data": "验证通过", "msg": "captcha verified"}
 	}
 	json.NewEncoder(w).Encode(body)
 }

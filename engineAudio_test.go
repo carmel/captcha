@@ -38,7 +38,7 @@ func TestEngineAudioCreate(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		idKey := randomId()
 		au := EngineAudioCreate(idKey, configA)
-		if err := CaptchaWriteToFile(au, ta, idKey, "wav"); err != nil {
+		if err := WriteToFile(au, ta, idKey, "wav"); err != nil {
 			t.Log(err)
 		}
 	}

@@ -28,11 +28,11 @@ func TestSiphash(t *testing.T) {
 }
 
 func TestSiprng(t *testing.T) {
-	m := make(map[uint64]interface{})
-	var yes interface{}
+	m := make(map[uint64]any)
+	var yes any
 	r := siprng{}
 	r.Seed([16]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15})
-	for i := 0; i < 100000; i++ {
+	for i := range 100000 {
 		v := r.Uint64()
 		if _, ok := m[v]; ok {
 			t.Errorf("siphash: collision on %d: %x", i, v)

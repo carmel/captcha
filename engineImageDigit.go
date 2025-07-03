@@ -208,8 +208,8 @@ func (m *ImageDigit) drawDigit(digit []byte, x, y int) {
 	xs := float64(x)
 	r := m.dotSize / 2
 	y += m.rng.Int(-r, r)
-	for yo := 0; yo < digitFontHeight; yo++ {
-		for xo := 0; xo < digitFontWidth; xo++ {
+	for yo := range digitFontHeight {
+		for xo := range digitFontWidth {
 			if digit[yo*digitFontWidth+xo] != digitFontBlackChar {
 				continue
 			}
@@ -229,7 +229,7 @@ func (m *ImageDigit) distort(amplude float64, period float64) {
 
 	dx := 2.0 * math.Pi / period
 	for x := range w {
-		for y := 0; y < h; y++ {
+		for y := range h {
 			xo := amplude * math.Sin(float64(y)*dx)
 			yo := amplude * math.Cos(float64(x)*dx)
 			newm.SetColorIndex(x, y, oldm.ColorIndexAt(x+int(xo), y+int(yo)))
@@ -265,13 +265,7 @@ func min3(x, y, z uint8) (m uint8) {
 }
 
 func max3(x, y, z uint8) (m uint8) {
-	m = x
-	if y > m {
-		m = y
-	}
-	if z > m {
-		m = z
-	}
+	m = max(z, max(y, x))
 	return
 }
 

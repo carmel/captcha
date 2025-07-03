@@ -9,7 +9,7 @@ import (
 func TestEngineCharCreate(t *testing.T) {
 	tc, _ := os.MkdirTemp("", "audio")
 	defer os.Remove(tc)
-	for i := 0; i < 16; i++ {
+	for i := range 16 {
 		configC.Mode = i % 4
 		boooo := i%2 == 0
 		configC.IsUseSimpleFont = boooo
@@ -21,14 +21,14 @@ func TestEngineCharCreate(t *testing.T) {
 
 		im := EngineCharCreate(configC)
 		fileName := strings.Trim(im.Content, "/+-+=?")
-		err := CaptchaWriteToFile(im, tc, fileName, "png")
+		err := WriteToFile(im, tc, fileName, "png")
 		if err != nil {
 			t.Error(err)
 		}
 	}
 }
 func TestMath(t *testing.T) {
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		q, r := randArithmetic()
 		t.Log(q, "--->", r)
 	}

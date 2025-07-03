@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/mojocn/captcha.svg?branch=master)](https://travis-ci.org/mojocn/captcha)
 [![codecov](https://codecov.io/gh/mojocn/captcha/branch/master/graph/badge.svg)](https://codecov.io/gh/mojocn/captcha)
 ![stability-stable](https://img.shields.io/badge/stability-stable-brightgreen.svg)
-[![codebeat badge](https://codebeat.co/badges/650029a5-fcea-4416-925e-277e2f178e96)](https://codebeat.co/projects/github-com-mojocn-base64captcha-master)
+[![codebeat badge](https://codebeat.co/badges/650029a5-fcea-4416-925e-277e2f178e96)](https://codebeat.co/projects/github-com-mojocn-captcha-master)
 [![Foundation](https://img.shields.io/badge/Golang-Foundation-green.svg)](http://golangfoundation.org)
 
 captcha supports digit, number, alphabet, arithmetic, audio and digit-alphabet captcha.
@@ -59,10 +59,10 @@ func demoCodeCaptchaCreate() {
 	var configC = captcha.ConfigCharacter{
 		Height:             60,
 		Width:              240,
-		//const CaptchaModeNumber:数字,CaptchaModeAlphabet:字母,CaptchaModeArithmetic:算术,CaptchaModeNumberAlphabet:数字字母混合.
-		Mode:               captcha.CaptchaModeNumber,
-		ComplexOfNoiseText: captcha.CaptchaComplexLower,
-		ComplexOfNoiseDot:  captcha.CaptchaComplexLower,
+		//const ModeNumber:数字,ModeAlphabet:字母,ModeArithmetic:算术,ModeNumberAlphabet:数字字母混合.
+		Mode:               captcha.ModeNumber,
+		ComplexOfNoiseText: captcha.ComplexLower,
+		ComplexOfNoiseDot:  captcha.ComplexLower,
 		IsUseSimpleFont:    true,
 		IsShowHollowLine:   false,
 		IsShowNoiseDot:     false,
@@ -76,16 +76,16 @@ func demoCodeCaptchaCreate() {
 	idKeyA, capA := captcha.Generate("", configA)
 	//write to base64 string.
 	//Generate first parameter is empty string,so the package will generate a random uuid for you.
-	base64stringA := captcha.CaptchaWriteToBase64Encoding(capA)
+	base64stringA := captcha.WriteToBase64Encoding(capA)
 	//create a characters captcha.
 	//Generate first parameter is empty string,so the package will generate a random uuid for you.
 	idKeyC, capC := captcha.Generate("", configC)
 	//write to base64 string.
-	base64stringC := captcha.CaptchaWriteToBase64Encoding(capC)
+	base64stringC := captcha.WriteToBase64Encoding(capC)
 	//create a digits captcha.
 	idKeyD, capD := captcha.Generate("", configD)
 	//write to base64 string.
-	base64stringD := captcha.CaptchaWriteToBase64Encoding(capD)
+	base64stringD := captcha.WriteToBase64Encoding(capD)
 
 	fmt.Println(idKeyA, base64stringA, "\n")
 	fmt.Println(idKeyC, base64stringC, "\n")
@@ -102,10 +102,10 @@ func captchaWriterToHttpResponseWriterDemoHandler(w http.ResponseWriter, r *http
 	var config = captcha.ConfigCharacter{
 		Height:             60,
 		Width:              240,
-		//const CaptchaModeNumber:数字,CaptchaModeAlphabet:字母,CaptchaModeArithmetic:算术,CaptchaModeNumberAlphabet:数字字母混合.
-		Mode:               captcha.CaptchaModeNumber,
-		ComplexOfNoiseText: captcha.CaptchaComplexLower,
-		ComplexOfNoiseDot:  captcha.CaptchaComplexLower,
+		//const ModeNumber:数字,ModeAlphabet:字母,ModeArithmetic:算术,ModeNumberAlphabet:数字字母混合.
+		Mode:               captcha.ModeNumber,
+		ComplexOfNoiseText: captcha.ComplexLower,
+		ComplexOfNoiseDot:  captcha.ComplexLower,
 		IsUseSimpleFont:    true,
 		IsShowHollowLine:   false,
 		IsShowNoiseDot:     false,
@@ -196,7 +196,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 
 	//create base64 encoding captcha
 
-	var config interface{}
+	var config any
 	switch postParameters.CaptchaType {
 	case "audio":
 		config = postParameters.ConfigAudio
@@ -206,7 +206,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 		config = postParameters.ConfigDigit
 	}
 	captchaId, captcaInterfaceInstance := captcha.Generate(postParameters.Id, config)
-	base64blob := captcha.CaptchaWriteToBase64Encoding(captcaInterfaceInstance)
+	base64blob := captcha.WriteToBase64Encoding(captcaInterfaceInstance)
 
 	//or you can just write the captcha content to the httpResponseWriter.
 	//before you put the captchaId into the response COOKIE.
@@ -214,7 +214,7 @@ func generateCaptchaHandler(w http.ResponseWriter, r *http.Request) {
 
 	//set json response
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	body := map[string]interface{}{"code": 1, "data": base64blob, "captchaId": captchaId, "msg": "success"}
+	body := map[string]any{"code": 1, "data": base64blob, "captchaId": captchaId, "msg": "success"}
 	json.NewEncoder(w).Encode(body)
 }
 // captcha verify http handler
@@ -236,9 +236,9 @@ func captchaVerifyHandle(w http.ResponseWriter, r *http.Request) {
 	//set json response
 	//设置json响应
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	body := map[string]interface{}{"code": "error", "data": "验证失败", "msg": "captcha failed"}
+	body := map[string]any{"code": "error", "data": "验证失败", "msg": "captcha failed"}
 	if verifyResult {
-		body = map[string]interface{}{"code": "success", "data": "验证通过", "msg": "captcha verified"}
+		body = map[string]any{"code": "success", "data": "验证通过", "msg": "captcha verified"}
 	}
 	json.NewEncoder(w).Encode(body)
 }
@@ -306,7 +306,7 @@ func main() {
       // Width Captcha png width in pixel.
       // 图像验证码的宽度像素
       Width int
-      //Mode : base64captcha.CaptchaModeNumber=0, base64captcha.CaptchaModeAlphabet=1, base64captcha.CaptchaModeArithmetic=2, base64captcha.CaptchaModeNumberAlphabet=3.
+      //Mode : captcha.ModeNumber=0, captcha.ModeAlphabet=1, captcha.ModeArithmetic=2, captcha.ModeNumberAlphabet=3.
       Mode int
       //ComplexOfNoiseText text noise count.
       ComplexOfNoiseText int
@@ -338,8 +338,8 @@ func main() {
   	WriteTo(w io.Writer) (n int64, err error)
   }
   ```
-- `func Generate(idKey string, configuration interface{}) (id string, captchaInstance CaptchaInterface)` return CaptchaInterface instance.
-- `func CaptchaWriteToBase64Encoding(cap CaptchaInterface) string` captcha base64 encodeing.
+- `func Generate(idKey string, configuration any) (id string, captchaInstance CaptchaInterface)` return CaptchaInterface instance.
+- `func WriteToBase64Encoding(cap CaptchaInterface) string` captcha base64 encodeing.
 - `func Verify(identifier, verifyValue string) bool` verify the captcha content by identifierKey
 - `func RandomId() string` Server Create Random IdentifierKey
 
