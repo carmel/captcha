@@ -89,7 +89,7 @@ func (m *Image) init() {
 	w := float64(m.Width - border*2)
 	h := float64(m.Height - border*2)
 	// fw takes into account 1-dot spacing between digits.
-	fw := float64(fontWidth + 5)
+	fw := float64(fontWidth + 9)
 	fh := float64(fontHeight)
 	digits := []byte(m.Chars)
 	nd := len(digits)

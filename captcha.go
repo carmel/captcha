@@ -1,7 +1,6 @@
 package captcha
 
 import (
-	"fmt"
 	"image/color"
 	"strings"
 	"time"
@@ -30,7 +29,6 @@ func (c *Captcha) Init() {
 func (c *Captcha) Generate() (string, string) {
 	id := StringUUID()
 	chars := RandomStr(c.Length)
-	fmt.Println("Chars:", chars)
 	c.store.Set(id, chars)
 	img := Image{
 		Chars:   chars,
