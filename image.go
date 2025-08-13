@@ -105,7 +105,7 @@ func (m *Image) init() {
 		nw = fw / fh * nh
 	}
 	// Calculate dot size.
-	m.dotSize = int(nh / fh)
+	m.dotSize = max(int(nh/fh), 1)
 	// Save everything, making the actual width smaller by 1 dot to account
 	// for spacing between digits.
 	charWidth := int(nw) - m.dotSize
